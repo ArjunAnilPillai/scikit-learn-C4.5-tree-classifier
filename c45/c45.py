@@ -82,4 +82,4 @@ class C45(BaseEstimator, ClassifierMixin):
     def printTree(self):
         check_is_fitted(self, ['tree_'])
         dom = minidom.parseString(self.tree_)
-        print(dom.toprettyxml(newl="\r\n"))
+        return dom.toprettyxml(newl="\r\n"), dom
