@@ -148,6 +148,7 @@ def grow_tree(data,category,parent,attrs_names):
                             num_max=num_cat
                             most_cat=cat                
                     parent.text=most_cat
+                    print(most_cat)
             else:
                 for k in set(data[index_selected]):
                     if not k=="?":
