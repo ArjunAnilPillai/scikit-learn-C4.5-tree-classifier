@@ -163,6 +163,74 @@ def grow_tree(data,category,parent,attrs_names):
     else:
         parent.text=category[0]
 
+def grow_tree_depth(data, category, parent, attrs_names, depth):
+    if len(set(category))>1:
+        
+        division=[]
+        for i in range(len(data)):
+            if set(data[i])==set("?"):
+                division.append(0)
+            else:
+                if (isnum(data[i])):
+                    division.append(gain(category,data[i]))           
+                else:
+                    division.append(gain_ratio(category,data[i]))
+        if max(division)==0:
+            num_max=0
+            for cat in set(category):
+                num_cat=category.count(cat)
+                if num_cat>num_max:
+                    num_max=num_cat
+                    most_cat=cat                
+            parent.text=most_cat
+        else:
+            index_selected=division.index(max(division))
+            name_selected=str(attrs_names[index_selected])
+            if isnum(data[index_selected]):
+                div_point=division_point(category,data[index_selected])
+                r_son_data=[[] for i in range(len(data))]
+                r_son_category=[]
+                l_son_data=[[] for i in range(len(data))]
+                l_son_category=[]
+                for i in range(len(category)):
+                    if not data[index_selected][i]=="?":
+                        if float(data[index_selected][i])<float(div_point):
+                            l_son_category.append(category[i])
+                            for j in range(len(data)):
+                                l_son_data[j].append(data[j][i])     
+                        else:
+                            r_son_category.append(category[i])
+                            for j in range(len(data)):
+                                r_son_data[j].append(data[j][i])  
+                if len(l_son_category)>0 and len(r_son_category)>0 and depth > 0:
+                    p_l=float(len(l_son_category))/(len(data[index_selected])-data[index_selected].count("?"))
+                    son=ET.SubElement(parent,name_selected,{'value':str(div_point),"flag":"l","p":str(round(p_l,3))})
+                    grow_tree_depth(l_son_data,l_son_category,son,attrs_names, depth - 1)
+                    son=ET.SubElement(parent,name_selected,{'value':str(div_point),"flag":"r","p":str(round(1-p_l,3))})
+                    grow_tree_depth(r_son_data,r_son_category,son,attrs_names, depth - 1)
+                else:
+                    num_max=0
+                    for cat in set(category):
+                        num_cat=category.count(cat)
+                        if num_cat>num_max:
+                            num_max=num_cat
+                            most_cat=cat                
+                    parent.text=most_cat
+            else:
+                for k in set(data[index_selected]):
+                    if not k=="?":
+                        son_data=[[] for i in range(len(data))]
+                        son_category=[]
+                        for i in range(len(category)):
+                            if data[index_selected][i]==k:
+                                son_category.append(category[i])
+                                for j in range(len(data)):
+                                    son_data[j].append(data[j][i])
+                        son=ET.SubElement(parent,name_selected,{'value':k,"flag":"m",'p':str(round(float(len(son_category))/(len(data[index_selected])-data[index_selected].count("?")),3))}) 
+                        grow_tree_depth(son_data,son_category,son,attrs_names,depth-1)   
+    else:
+        parent.text=category[0]
+
 def add(d1,d2):
     d=d1
     for i in d2:

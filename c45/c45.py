@@ -5,7 +5,7 @@ from xml.etree import ElementTree as ET
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.validation import check_array, check_is_fitted, check_X_y
 
-from .c45_utils import decision, grow_tree
+from .c45_utils import decision, grow_tree, grow_tree_depth
 
 class C45(BaseEstimator, ClassifierMixin):
     """A C4.5 tree classifier.
@@ -83,3 +83,25 @@ class C45(BaseEstimator, ClassifierMixin):
         check_is_fitted(self, ['tree_'])
         dom = minidom.parseString(self.tree_)
         return dom.toprettyxml(newl="\r\n"), dom
+
+    def fit_fixed_depth(self, X, y, depth):
+        X, y = check_X_y(X, y)
+        self.X_ = X
+        self.y_ = y
+        self.resultType = type(y[0])
+        if self.attrNames is None:
+            self.attrNames = [f'attr{x}' for x in range(len(self.X_[0]))]
+
+        assert(len(self.attrNames) == len(self.X_[0]))
+
+        data = [[] for i in range(len(self.attrNames))]
+        categories = []
+
+        for i in range(len(self.X_)):
+            categories.append(str(self.y_[i]))
+            for j in range(len(self.attrNames)):
+                data[j].append(self.X_[i][j])
+        root = ET.Element('DecisionTree')
+        grow_tree_depth(data,categories,root,self.attrNames, depth)
+        self.tree_ = ET.tostring(root, encoding="unicode")
+        return self
