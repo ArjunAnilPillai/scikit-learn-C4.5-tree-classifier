@@ -1,4 +1,9 @@
 # Scikit-learn C4.5 tree classifier
+
+>_Forked from [RaczeQ/scikit-learn-C4.5-tree-classifier](https://github.com/RaczeQ/scikit-learn-C4.5-tree-classifier)_<br />
+>Changes made
+>>_Added pre-pruning to limit training of the model's depth to a certain depth to avoid overfitting_ 
+
 A C4.5 tree classifier based on the [zhangchiyu10/pyC45](https://github.com/zhangchiyu10/pyC45) repository, refactored to be compatible with the [scikit-learn](https://scikit-learn.org/stable/index.html) library.
 
 To use this classifier, just copy c45 directory to your project and import classifier where you need it using `from c45 import C45` line
@@ -32,4 +37,7 @@ Accuracy: 0.8533333333333334
                 </petallengthcm>
         </petallengthcm>
 </DecisionTree>
+>>> # Method to stop growing the tree after a certain depth
+>>> depth = 5 
+>>> clf.fit_fixed_depth(X_train, y_train, depth)
 ```
